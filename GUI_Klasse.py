@@ -1,7 +1,9 @@
 
 #!/usr/bin/python3
+from ast import List
 from colorsys import rgb_to_hls
 from curses import termattrs
+from operator import index
 from tkinter.messagebox import showinfo
 from turtle import bgcolor, color, width
 import Inspektionsheft_Klasse as IB
@@ -17,6 +19,7 @@ class Main(tk.Frame):
         self.Inspektionsheft=IB.Inspectionbook()
         
         self.create_widgets()
+        master.geometry("900x600")
         self.grid()
     
     # Function to Load a Existing Service Book    
@@ -54,9 +57,9 @@ class Main(tk.Frame):
 
         #Erstelle Frame für Treeview
         TreeView_Frame=ttk.Frame(self)
-        TreeView_Frame.grid(row=1,column=0,sticky="nsew")
-        TreeView=ttk.Treeview(TreeView_Frame,show="headings")
-        TreeView.grid(row=0,column=0,sticky="NSEW",padx=5,ipady=10)
+        TreeView_Frame.grid(row=1,column=0,sticky="nsew",rowspan=1)
+        TreeView=ttk.Treeview(TreeView_Frame,show="headings",height=25)
+        TreeView.grid(row=0,column=0,sticky="NSE",padx=5,ipady=10,rowspan=1,columnspan=1)
         TreeView['columns']=("Kategorie","Bauteil","Kilometerstand","Anmerkungen")
         
         # Bind Load Function to Button command
@@ -91,32 +94,31 @@ class Main(tk.Frame):
                 for ServiceData in self.Inspektionsheft.Inspektionshefts:
                     if ServiceData.Kategorie==contact_data[0] and ServiceData.Bauteil==contact_data[1] \
                         and ServiceData.Notizen==contact_data[3] and ServiceData.Kilometerstand==int(contact_data[2]) :
-                        print("Kategorie passt")
-            
-        TreeView.bind("<Double-Button-1>", click)
-        TreeView.bind("<ButtonRelease-1>", select_click)
+                        print("found")
+                        index_for_catergory=self.find_index(ServiceData.Kategorie,Entry_Kategorie)
+                        Entry_Kategorie.select_set(index_for_catergory)
+        
+        
+        
         # Erstellen der Scrollbar
         Scrollbar=tk.Scrollbar(TreeView_Frame)
-        Scrollbar.grid( row=0,column=1, sticky="nsw")
+        Scrollbar.grid( row=0,column=1, sticky="nsw",rowspan=3)
         Scrollbar["command"]=TreeView.yview
         TreeView["yscrollcommand"]=Scrollbar.set
 
 
         # Erstelle Frame für Bearbeitungslabel
-        Right_Frame_for_Label=ttk.Frame(self)
-        Right_Frame_for_Label.grid(column=1,row=1, sticky="nse")
-        Right_Frame_for_Label.rowconfigure(1,weight=1)
-        Right_Frame_for_Label.rowconfigure(2,weight=1)
-        Right_Frame_for_Label.rowconfigure(3,weight=1)
-        Right_Frame_for_Label.rowconfigure(4,weight=1)
-        Right_Frame_for_Label.rowconfigure(5,weight=1)
+        Right_Frame_for_Label=ttk.Frame(self,height=25)
+        Right_Frame_for_Label.grid(column=1,row=1, sticky="ne")
+        
+        
 
         Right_Frame_for_Label.columnconfigure(1,weight=1)
         ##########Kategorien Label und Listbox##########
         Label_Kategorie=ttk.Label(Right_Frame_for_Label,text="Kategorie")
         Label_Kategorie.grid(row=1, column=0,ipadx=10,sticky="nw")
         Entry_Kategorie=tk.Listbox(Right_Frame_for_Label,height=5,width=25)
-        Entry_Kategorie.grid(row=1,column=1,columnspan=2,sticky="n",pady=10,padx=5)
+        Entry_Kategorie.grid(row=1,column=1,columnspan=2,sticky="nw",pady=10,padx=5)
         
         Kategorien=["Motor","Antrieb","Aufhängung","Bremsen/Reifen","Beleuchtung","Anderes"]
         for Kategorie in Kategorien:    
@@ -130,37 +132,42 @@ class Main(tk.Frame):
 
         ##########Bauteil Label und ?????#########
         Label_Bauteil=ttk.Label(Right_Frame_for_Label,text="Bauteil")
-        Label_Bauteil.grid(row=2,column=0, sticky="nw")
+        Label_Bauteil.grid(row=2,column=0, sticky="new")
         Listbox_Bauteile=tk.Listbox()
 
 
         Label_Kilometer=ttk.Label(Right_Frame_for_Label,text="Kilometerstand")
-        Label_Kilometer.grid(row=3,column=0,sticky="nw",pady=10,ipadx=10)
+        Label_Kilometer.grid(row=3,column=0,sticky="new",pady=10,ipadx=10)
         Entry_Kilometer=ttk.Entry(Right_Frame_for_Label,text="Kilometerstand eingeben",width=25)
-        Entry_Kilometer.grid(row=3, column=1,columnspan=2,pady=10,padx=5,sticky="nw")
+        Entry_Kilometer.grid(row=3, column=1,columnspan=2,pady=10,padx=5,sticky="new")
 
         Label_Notizen=ttk.Label(Right_Frame_for_Label,text="Anmerkungen")
         Label_Notizen.grid(row=4,column=0,sticky="nw",pady=10,ipadx=10)
         Entry_Notizen=ttk.Entry(Right_Frame_for_Label,width=25)
-        Entry_Notizen.grid(row=4,column=1,columnspan=2,sticky="nw",pady=10,padx=5,rowspan=2)
+        Entry_Notizen.grid(row=4,column=1,columnspan=2,sticky="new",pady=10,padx=5,rowspan=2)
         
 
         Button_Save=ttk.Button(Right_Frame_for_Label,text="Save")
-        Button_Save.grid(row=5,column=0,sticky="nsew")
+        Button_Save.grid(row=5,column=0,sticky="sew")
 
         Button_Edit=ttk.Button(Right_Frame_for_Label,text="Edit")
-        Button_Edit.grid(row=5,column=1,sticky="nsew")
+        Button_Edit.grid(row=5,column=1,sticky="sew")
 
         Button_Delete=ttk.Button(Right_Frame_for_Label,text="Delete")
-        Button_Delete.grid(row=5,column=2,sticky="nsew")
-        Right_Frame_for_Label.columnconfigure(0,weight=1)
-        Right_Frame_for_Label.columnconfigure(1,weight=2)
-        Right_Frame_for_Label.columnconfigure(2,weight=5)
+        Button_Delete.grid(row=5,column=2,sticky="sew")
+        
+
+        TreeView.bind("<Double-Button-1>", click)
+        TreeView.bind("<ButtonRelease-1>", select_click)
     
     def click_fill_fields(self,TreeView):
         showinfo(title="Information",message="Fields will be filled")
     
-    
+    def find_index(self,Category,ListBox):
+        ItemList=ListBox.get(0, "end")
+        print(ItemList)
+        return ItemList.index(Category)
+
 
 
 
