@@ -97,6 +97,10 @@ class Main(tk.Frame):
                         print("found")
                         index_for_catergory=self.find_index(ServiceData.Kategorie,Entry_Kategorie)
                         Entry_Kategorie.select_set(index_for_catergory)
+                        #The Parts will be shown depending on the selection in the Category,\
+                        #  but for now there will be shown Checkboxes which will be checked 
+                        Entry_Kilometer.insert(0,ServiceData.Kilometerstand)
+                        Entry_Notizen.insert(0,ServiceData.Notizen)
         
         
         
@@ -114,7 +118,8 @@ class Main(tk.Frame):
         
 
         Right_Frame_for_Label.columnconfigure(1,weight=1)
-        ##########Kategorien Label und Listbox##########
+        
+        #########-----Kategorien Label und Listbox-----##########
         Label_Kategorie=ttk.Label(Right_Frame_for_Label,text="Kategorie")
         Label_Kategorie.grid(row=1, column=0,ipadx=10,sticky="nw")
         Entry_Kategorie=tk.Listbox(Right_Frame_for_Label,height=5,width=25)
