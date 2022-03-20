@@ -17,8 +17,9 @@ class Inspectionbook():
         
 
     def append(self,Objekt):
+        self.Inspektionshefts=[]
         for element in Objekt:
-            self.Inspektionshefts.append(element)
+                self.Inspektionshefts.append(element)
         pass
         
 # #Generator für getter Funktion um Listenobjekte zurückzugeben
@@ -60,7 +61,7 @@ class Inspectiondata(Inspectionbook):
     #     return self.Notizen
 
 # Inspectionsdatei1=Inspectiondata("Motor","Luftfilter",230500)
-# Inspectionsdatei2=Inspectiondata("Beleuchtung","Glühbirne","230500","Scheinwerfer vorne links")
+# Inspectionsdatei2=Inspectiondata("Beleuchtung","Glühbirne",230500","Scheinwerfer vorne links")
 # Collected_Datas=Inspectionbook()
 # Inspectionsdatei1.AddDatainInspectionbook(Collected_Datas)
 # Inspectionsdatei2.AddDatainInspectionbook(Collected_Datas)

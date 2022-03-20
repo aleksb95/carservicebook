@@ -1,6 +1,8 @@
 
 #!/usr/bin/python3
 from colorsys import rgb_to_hls
+from curses import termattrs
+from tkinter.messagebox import showinfo
 from turtle import bgcolor, color, width
 import Inspektionsheft_Klasse as IB
 from textwrap import fill
@@ -10,18 +12,22 @@ import pickle
 class Main(tk.Frame):
     def __init__(self,master=None):
         tk.Frame.__init__(self,master)
+        
         #Erstelle Objekt vom Typ Inpektionsheft
         self.Inspektionsheft=IB.Inspectionbook()
         
         self.create_widgets()
         self.grid()
-        
+    
+    # Function to Load a Existing Service Book    
     def Load_inspectionbook(self,TreeView):
         
         file=open ("Reset_Contact", "rb")
         self.Inspektionsheft.append(pickle.load(file))
         DataSet=self.Inspektionsheft.get_Inspectionbook()
         #pickle Datei öffnen und jedes Objekt aufrufen
+        for i in TreeView.get_children():
+            TreeView.delete(i)
         i=0
         for _ in self.Inspektionsheft.Inspektionshefts:
             #Data=next(DataSet)
@@ -37,8 +43,8 @@ class Main(tk.Frame):
         
         Upper_Button_Frame.grid(row=0,column=0,sticky="nsew")
         
-        def Load_Inspectionbook():
-            self.Load_inspectionbook()
+        def Load_Inspectionbook(object ):
+            self.Load_inspectionbook(object)
         Lade_Button=ttk.Button(Upper_Button_Frame,text="Lade Inspektionsheft")
         Lade_Button.grid(row=0,column=0,sticky=tk.W+tk.E,pady=10,padx=5)
         Quit_Button=ttk.Button(Upper_Button_Frame,text="Beenden", command=self._root().destroy)
@@ -53,7 +59,8 @@ class Main(tk.Frame):
         TreeView.grid(row=0,column=0,sticky="NSEW",padx=5,ipady=10)
         TreeView['columns']=("Kategorie","Bauteil","Kilometerstand","Anmerkungen")
         
-        Lade_Button['command']= lambda x=TreeView: self.Load_inspectionbook(x)
+        # Bind Load Function to Button command
+        Lade_Button['command']= lambda object=TreeView: self.Load_inspectionbook(object)
         
         TreeView_Frame.rowconfigure(1,weight=1)
 
@@ -68,9 +75,26 @@ class Main(tk.Frame):
         TreeView.heading("Kilometerstand",text="Kilometerstand",anchor=tk.W)
         TreeView.heading("Anmerkungen",text="Anmerkungen",anchor=tk.W)
         def click(e):
+            #open new Top Level Window with all of the information
             print("Doppelklick!!! Hier soll sich ein TopLevel Fenster öffnen um den kompletten Eintrag anzuzeigen")
             pass
+
+        def select_click(e):
+            selected=TreeView.focus()
+            if selected!="":
+                self.click_fill_fields(TreeView)
+                #Here now take selection Objects and search Object in Inspectionbook
+                
+                #Filter all Informations from the Object
+                contact_data=TreeView.item(selected,'values')
+                print(contact_data)
+                for ServiceData in self.Inspektionsheft.Inspektionshefts:
+                    if ServiceData.Kategorie==contact_data[0] and ServiceData.Bauteil==contact_data[1] \
+                        and ServiceData.Notizen==contact_data[3] and ServiceData.Kilometerstand==int(contact_data[2]) :
+                        print("Kategorie passt")
+            
         TreeView.bind("<Double-Button-1>", click)
+        TreeView.bind("<ButtonRelease-1>", select_click)
         # Erstellen der Scrollbar
         Scrollbar=tk.Scrollbar(TreeView_Frame)
         Scrollbar.grid( row=0,column=1, sticky="nsw")
@@ -132,7 +156,10 @@ class Main(tk.Frame):
         Right_Frame_for_Label.columnconfigure(0,weight=1)
         Right_Frame_for_Label.columnconfigure(1,weight=2)
         Right_Frame_for_Label.columnconfigure(2,weight=5)
-        
+    
+    def click_fill_fields(self,TreeView):
+        showinfo(title="Information",message="Fields will be filled")
+    
     
 
 
