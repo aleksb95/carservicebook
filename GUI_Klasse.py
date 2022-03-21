@@ -21,7 +21,8 @@ class Main(tk.Frame):
         # Erstelle Objekt vom Typ Inpektionsheft
         self.Inspektionsheft = IB.Inspectionbook()
         self.List_of_new_Service_Datas=[]
-       
+        self.example_contact=False
+
         # master.geometry("900x600")
         master.title("Servicebook V1.0")
         style_master = ttk.Style()
@@ -34,9 +35,9 @@ class Main(tk.Frame):
     # Function to Load a Existing Service Book
 
     def Load_inspectionbook(self, TreeView):
-
-        file = open("Reset_Contact", "rb")
-        self.Inspektionsheft.append(pickle.load(file)) #List of Objects
+        if self.example_contact is True:
+            file = open("Reset_Contact", "rb")
+            self.Inspektionsheft.append(pickle.load(file)) #List of Objects
         DataSet = self.Inspektionsheft.get_Inspectionbook()
         # pickle Datei öffnen und jedes Objekt aufrufen
         for i in TreeView.get_children():
@@ -59,9 +60,13 @@ class Main(tk.Frame):
         Upper_Button_Frame = ttk.Frame(self.master, style='TFrame')
 
         Upper_Button_Frame.grid(row=0, column=0, sticky="nsew")
-
-        def Load_Inspectionbook(object):
-            self.Load_inspectionbook(object)
+        
+        #Function for loading the reset Contact List for Testing
+        def Load_Reset_Inspectionbook():
+            self.example_contact=True
+            self.Load_inspectionbook(TreeView)
+            self.example_contact=False
+        #Adding upper Buttons
         Lade_Button = ttk.Button(
             Upper_Button_Frame, text="Lade Inspektionsheft")
         Lade_Button.grid(row=0, column=0, sticky=tk.W+tk.E, pady=10, padx=5)
@@ -84,8 +89,8 @@ class Main(tk.Frame):
                                "Kilometerstand", "Anmerkungen")
 
         # Bind Load Function to Button command
-        Lade_Button['command'] = lambda object=TreeView: self.Load_inspectionbook(
-            object)
+        params=(TreeView)
+        Lade_Button['command'] =Load_Reset_Inspectionbook
 
         TreeView_Frame.rowconfigure(1, weight=1)
 
@@ -190,7 +195,7 @@ class Main(tk.Frame):
             index_category=Entry_Kategorie.curselection()
             selection_category=Entry_Kategorie.get(index_category)
             self.New_Mode(selection_category,"Kolben",Entry_Kilometer.get(),Entry_Notizen.get())
-            self.add_new_data_set_to_treeview(self.InspectionData,TreeView)
+            
         
         
         
@@ -234,14 +239,12 @@ class Main(tk.Frame):
         # Pass te information to the self.Inspectionbook and add the service data to it (Add function in inspectionbook)
         self.InspectionData=IB.Inspectiondata(category_selected,parts,km,note)
         #Add Inspectiondataset to Inspectionbook
-        #Pass InspectionData Object to function to add it to Treeview
         
         self.InspectionData.AddDatainInspectionbook(self.Inspektionsheft)
 
 
         pass
-    def add_new_data_set_to_treeview(self,InspectionData,TreeView):
-        pass
+    
 
 
 
