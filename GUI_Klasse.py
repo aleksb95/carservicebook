@@ -22,11 +22,11 @@ class Main(tk.Frame):
         self.Inspektionsheft = IB.Inspectionbook()
         self.List_of_new_Service_Datas=[]
         self.example_contact=False
-
-        # master.geometry("900x600")
+        
+        master.geometry("900x600")
         master.title("Servicebook V1.0")
         style_master = ttk.Style()
-        style_master.configure('TFrame', background='black')
+        style_master.configure('TFrame')
 
         self.create_widgets()
 
@@ -34,19 +34,22 @@ class Main(tk.Frame):
 
     # Function to Load a Existing Service Book
 
-    def Load_inspectionbook(self, TreeView):
+    def Load_inspectionbook(self):
+        
         if self.example_contact is True:
+            self.Inspektionsheft.ServicebookDatas=[]
             file = open("Reset_Contact", "rb")
             self.Inspektionsheft.append(pickle.load(file)) #List of Objects
         DataSet = self.Inspektionsheft.get_Inspectionbook()
         # pickle Datei öffnen und jedes Objekt aufrufen
-        for i in TreeView.get_children():
-            TreeView.delete(i)
+        for i in self.TreeView.get_children():
+            self.TreeView.delete(i)
+
         i = 0
         for _ in self.Inspektionsheft.ServicebookDatas:
             # Data=next(DataSet)
 
-            TreeView.insert(parent='', index=i, text='', values=(
+            self.TreeView.insert(parent='', index=i, text='', values=(
                 next(DataSet), next(DataSet), next(DataSet), next(DataSet)))
         pass
 
@@ -55,16 +58,15 @@ class Main(tk.Frame):
     def create_widgets(self):
         self.bind_all("<Key-q>", lambda e: root.destroy())
         # Erstelle Upper Button Frame
-        Style = ttk.Style()
-        Style.configure('TFrame', background='black')
-        Upper_Button_Frame = ttk.Frame(self.master, style='TFrame')
+        
+        Upper_Button_Frame = ttk.Frame(self.master)
 
-        Upper_Button_Frame.grid(row=0, column=0, sticky="nsew")
+        Upper_Button_Frame.grid(row=0, column=0,columnspan=2, sticky="nsew")
         
         #Function for loading the reset Contact List for Testing
         def Load_Reset_Inspectionbook():
             self.example_contact=True
-            self.Load_inspectionbook(TreeView)
+            self.Load_inspectionbook()
             self.example_contact=False
         #Adding upper Buttons
         Lade_Button = ttk.Button(
@@ -81,28 +83,29 @@ class Main(tk.Frame):
         # Erstelle Frame für Treeview
         style_treeview = ttk.Style()
         style_treeview.configure('Tree.TFrame', background='red')
-        TreeView_Frame = ttk.Frame(self.master, style='Tree.TFrame')
-        TreeView_Frame.grid(row=1, column=0, sticky="nsew")
-        TreeView = ttk.Treeview(TreeView_Frame, show="headings", height=25)
-        TreeView.grid(row=0, column=0, sticky="NSE", padx=5, ipady=10)
-        TreeView['columns'] = ("Kategorie", "Bauteil",
+        TreeView_Frame = ttk.Frame(self.master)
+        TreeView_Frame.grid(row=1, column=0,rowspan=1, sticky="NSEW")
+        
+        self.TreeView = ttk.Treeview(TreeView_Frame, show="headings", height=25)
+        self.TreeView.grid(row=0, column=0, sticky="NSEW", padx=5, ipady=10)
+        self.TreeView['columns'] = ("Kategorie", "Bauteil",
                                "Kilometerstand", "Anmerkungen")
 
         # Bind Load Function to Button command
-        params=(TreeView)
+        
         Lade_Button['command'] =Load_Reset_Inspectionbook
 
-        TreeView_Frame.rowconfigure(1, weight=1)
+        
 
-        TreeView.column("Kategorie", width=120, anchor=tk.W, minwidth=50)
-        TreeView.column("Bauteil", width=120, anchor=tk.W, minwidth=50)
-        TreeView.column("Kilometerstand", width=120, anchor=tk.W, minwidth=50)
-        TreeView.column("Anmerkungen", width=120, anchor=tk.W, minwidth=50)
+        self.TreeView.column("Kategorie", width=120, anchor=tk.W, minwidth=50)
+        self.TreeView.column("Bauteil", width=120, anchor=tk.W, minwidth=50)
+        self.TreeView.column("Kilometerstand", width=120, anchor=tk.W, minwidth=50)
+        self.TreeView.column("Anmerkungen", width=120, anchor=tk.W, minwidth=50)
 
-        TreeView.heading("Kategorie", text="Kategorie", anchor=tk.W)
-        TreeView.heading("Bauteil", text="Bauteil", anchor=tk.W)
-        TreeView.heading("Kilometerstand", text="Kilometerstand", anchor=tk.W)
-        TreeView.heading("Anmerkungen", text="Anmerkungen", anchor=tk.W)
+        self.TreeView.heading("Kategorie", text="Kategorie", anchor=tk.W)
+        self.TreeView.heading("Bauteil", text="Bauteil", anchor=tk.W)
+        self.TreeView.heading("Kilometerstand", text="Kilometerstand", anchor=tk.W)
+        self.TreeView.heading("Anmerkungen", text="Anmerkungen", anchor=tk.W)
 
         def click(e):
             # open new Top Level Window with all of the information
@@ -113,13 +116,13 @@ class Main(tk.Frame):
                 Entry_Kilometer.delete(0,'end') #syntax from delete is start index to last index (first to last     )
                 Entry_Notizen.delete(0,'end')
         def select_click(e):
-            selected = TreeView.focus()
+            selected = self.TreeView.focus()
             if selected != "":
-                self.click_fill_fields(TreeView)
+                self.click_fill_fields(self.TreeView)
                 # Here now take selection Objects and search Object in Inspectionbook
                 empty_all_labels()
                 # Filter all Informations from the Object
-                contact_data = TreeView.item(selected, 'values')
+                contact_data = self.TreeView.item(selected, 'values')
                 print(contact_data)
                 for ServiceData in self.Inspektionsheft.ServicebookDatas:
                     if ServiceData.Kategorie == contact_data[0] and ServiceData.Bauteil == contact_data[1] \
@@ -135,25 +138,25 @@ class Main(tk.Frame):
 
         # Erstellen der Scrollbar
         Scrollbar = tk.Scrollbar(TreeView_Frame)
-        Scrollbar.grid(row=0, column=1, sticky="nesw")
-        Scrollbar["command"] = TreeView.yview
-        TreeView["yscrollcommand"] = Scrollbar.set
+        Scrollbar.grid(row=0, column=1, sticky="nsw")
+        Scrollbar["command"] = self.TreeView.yview
+        self.TreeView["yscrollcommand"] = Scrollbar.set
 
         # Erstelle Frame für Bearbeitungslabel
         Style_Labels = ttk.Style()
         Style_Labels.configure('Labels.TFrame', background='blue')
-        Right_Frame_for_Label = ttk.Frame(self.master, style='Labels.TFrame')
-        Right_Frame_for_Label.columnconfigure(1, weight=1)
-        Right_Frame_for_Label.grid(column=1, row=1, sticky="new")
+        Right_Frame_for_Label = ttk.Frame(self.master)
+        
+        Right_Frame_for_Label.grid(column=1, row=1,rowspan=2, sticky="nsew")
 
-        Right_Frame_for_Label.columnconfigure(1, weight=1)
+        Right_Frame_for_Label.columnconfigure(1, weight=2)
 
         #########-----Kategorien Label und Listbox-----##########
         Label_Kategorie = ttk.Label(Right_Frame_for_Label, text="Kategorie")
 
         Label_Kategorie.grid(row=1, column=0, ipadx=10, sticky="nw")
         Entry_Kategorie = tk.Listbox(Right_Frame_for_Label, height=5, width=25)
-        Entry_Kategorie.grid(row=1, column=1, sticky="nw", pady=10, padx=5)
+        Entry_Kategorie.grid(row=1, column=1, sticky="new", pady=10, padx=5)
 
         Kategorien = ["Motor", "Antrieb", "Aufhängung",
                       "Bremsen/Reifen", "Beleuchtung", "Anderes"]
@@ -186,41 +189,44 @@ class Main(tk.Frame):
         s = ttk.Style()
         s.configure('s.TFrame', background='green')
 
-        Button_Frame = ttk.Frame(self.master, style='s.TFrame')
-        Button_Frame.grid(row=2, column=1, sticky="nsew")
+        Button_Frame = ttk.Frame(self.master)
+        Button_Frame.grid(row=2, column=1,rowspan=1, sticky="sew")
+        
         Button_Save = ttk.Button(Button_Frame, text="Save")
-        Button_Save.grid(row=5, column=0, sticky="nsw")
+        Button_Save.grid(row=0, column=1, sticky="nsew",padx=10,pady=20)
         
         def new_service(e):
             index_category=Entry_Kategorie.curselection()
             selection_category=Entry_Kategorie.get(index_category)
             self.New_Mode(selection_category,"Kolben",Entry_Kilometer.get(),Entry_Notizen.get())
-            
+            self.Load_inspectionbook()
         
         
         
         Button_New = ttk.Button(Button_Frame, text="Add New Data")
-        Button_New.grid(row=5, column=1, sticky="nsw")
+        Button_New.grid(row=0, column=2, sticky="nsew",padx=10,pady=20)
         Button_New.bind("<ButtonRelease-1>",new_service)
+        
         Button_Delete = ttk.Button(Button_Frame, text="Delete")
-        Button_Delete.grid(row=5, column=2, sticky="nsw")
+        Button_Delete.grid(row=0, column=3, sticky="nsew",padx=10,pady=20)
 
-        TreeView.bind("<Double-Button-1>", click)
-        TreeView.bind("<ButtonRelease-1>", select_click)
+        self.TreeView.bind("<Double-Button-1>", click)
+        self.TreeView.bind("<ButtonRelease-1>", select_click)
 
-        # # self.grid_columnconfigure(0,weight=1)
-        # # self.grid_columnconfigure(1,weight=1)
-        # # self.grid_columnconfigure(2,weight=1)
-        # # self.grid_rowconfigure(0,weight=1)
-        # # self.grid_rowconfigure(1,weight=1)
-        # TreeView_Frame.grid_columnconfigure(0,weight=3)
-        # TreeView_Frame.grid_columnconfigure(1,weight=1)
-        # TreeView_Frame.grid_rowconfigure(1,weight=1)
-        # TreeView_Frame.grid_rowconfigure(0,weight=1)
-        # Right_Frame_for_Label.grid_columnconfigure(0,weight=1)
-        # Right_Frame_for_Label.grid_columnconfigure(1,weight=1)
-        # Right_Frame_for_Label.grid_rowconfigure(0,weight=1)
-        # Button_Frame.grid_columnconfigure
+        self.master.grid_columnconfigure(0,weight=6)
+        self.master.grid_columnconfigure(1,weight=1)
+        #self.grid_columnconfigure(2,weight=1)
+        self.master.grid_rowconfigure(1,weight=1)
+        
+        
+        TreeView_Frame.grid_columnconfigure(0,weight=5)
+        #TreeView_Frame.grid_columnconfigure(1,weight=2)
+        #TreeView_Frame.grid_rowconfigure(1,weight=1)
+        TreeView_Frame.grid_rowconfigure(0,weight=1)
+        Button_Frame.grid_columnconfigure(1,weight=1)
+        Button_Frame.grid_columnconfigure(2,weight=1)
+        Button_Frame.grid_columnconfigure(3,weight=1)
+        
 
     def click_fill_fields(self, TreeView):
         showinfo(title="Information", message="Fields will be filled")
@@ -239,8 +245,8 @@ class Main(tk.Frame):
         # Pass te information to the self.Inspectionbook and add the service data to it (Add function in inspectionbook)
         self.InspectionData=IB.Inspectiondata(category_selected,parts,km,note)
         #Add Inspectiondataset to Inspectionbook
-        
         self.InspectionData.AddDatainInspectionbook(self.Inspektionsheft)
+
 
 
         pass
