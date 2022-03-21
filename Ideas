@@ -1,0 +1,20 @@
+Add two Sets for Languages (Englisch and German)
+Choose at the programmstart the language, in this Case the programm will choose the choosen words from Sets
+___________________________________________________________________________________________________________________________
+
+Set Picture of car or manufacture symbol
+___________________________________________________________________________________________________________________________
+
+Add Exceptions
+___________________________________________________________________________________________________________________________
+
+Write Unit Tests
+___________________________________________________________________________________________________________________________
+
+Maybe a routine which have the kilometers as information to inform the user when to service or check a part,
+depends on kilometers 
+___________________________________________________________________________________________________________________________
+
+A routine which compares the actual date and the date from the service (for example oil change).
+If we take the oil change as example the programm would tell when a year has passed since the last oil change
+
