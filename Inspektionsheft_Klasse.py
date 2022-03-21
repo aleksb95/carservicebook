@@ -23,7 +23,7 @@ class Inspectionbook():
                     self.ServicebookDatas.append(element)
         else:
             self.ServicebookDatas.append(Objekt)
-        pass
+        
         
 # #Generator für getter Funktion um Listenobjekte zurückzugeben
 #     @property
