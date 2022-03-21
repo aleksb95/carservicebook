@@ -247,9 +247,11 @@ class Main(tk.Frame):
         #Add Inspectiondataset to Inspectionbook
         self.InspectionData.AddDatainInspectionbook(self.Inspektionsheft)
 
-
-
+    def Save_Servicebook(self):
         pass
+
+
+        
     
 
 
