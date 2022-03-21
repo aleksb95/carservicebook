@@ -16,10 +16,14 @@ import pickle
 class Main(tk.Frame):
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
-
+        
+        self.master=master
         # Erstelle Objekt vom Typ Inpektionsheft
         self.Inspektionsheft = IB.Inspectionbook()
+        self.List_of_new_Service_Datas=[]
+       
         # master.geometry("900x600")
+        master.title("Servicebook V1.0")
         style_master = ttk.Style()
         style_master.configure('TFrame', background='black')
 
@@ -32,13 +36,13 @@ class Main(tk.Frame):
     def Load_inspectionbook(self, TreeView):
 
         file = open("Reset_Contact", "rb")
-        self.Inspektionsheft.append(pickle.load(file))
+        self.Inspektionsheft.append(pickle.load(file)) #List of Objects
         DataSet = self.Inspektionsheft.get_Inspectionbook()
         # pickle Datei öffnen und jedes Objekt aufrufen
         for i in TreeView.get_children():
             TreeView.delete(i)
         i = 0
-        for _ in self.Inspektionsheft.Inspektionshefts:
+        for _ in self.Inspektionsheft.ServicebookDatas:
             # Data=next(DataSet)
 
             TreeView.insert(parent='', index=i, text='', values=(
@@ -52,7 +56,7 @@ class Main(tk.Frame):
         # Erstelle Upper Button Frame
         Style = ttk.Style()
         Style.configure('TFrame', background='black')
-        Upper_Button_Frame = ttk.Frame(self, style='TFrame')
+        Upper_Button_Frame = ttk.Frame(self.master, style='TFrame')
 
         Upper_Button_Frame.grid(row=0, column=0, sticky="nsew")
 
@@ -72,7 +76,7 @@ class Main(tk.Frame):
         # Erstelle Frame für Treeview
         style_treeview = ttk.Style()
         style_treeview.configure('Tree.TFrame', background='red')
-        TreeView_Frame = ttk.Frame(self, style='Tree.TFrame')
+        TreeView_Frame = ttk.Frame(self.master, style='Tree.TFrame')
         TreeView_Frame.grid(row=1, column=0, sticky="nsew")
         TreeView = ttk.Treeview(TreeView_Frame, show="headings", height=25)
         TreeView.grid(row=0, column=0, sticky="NSE", padx=5, ipady=10)
@@ -112,7 +116,7 @@ class Main(tk.Frame):
                 # Filter all Informations from the Object
                 contact_data = TreeView.item(selected, 'values')
                 print(contact_data)
-                for ServiceData in self.Inspektionsheft.Inspektionshefts:
+                for ServiceData in self.Inspektionsheft.ServicebookDatas:
                     if ServiceData.Kategorie == contact_data[0] and ServiceData.Bauteil == contact_data[1] \
                             and ServiceData.Notizen == contact_data[3] and ServiceData.Kilometerstand == int(contact_data[2]):
                         print("found")
@@ -133,7 +137,7 @@ class Main(tk.Frame):
         # Erstelle Frame für Bearbeitungslabel
         Style_Labels = ttk.Style()
         Style_Labels.configure('Labels.TFrame', background='blue')
-        Right_Frame_for_Label = ttk.Frame(self, style='Labels.TFrame')
+        Right_Frame_for_Label = ttk.Frame(self.master, style='Labels.TFrame')
         Right_Frame_for_Label.columnconfigure(1, weight=1)
         Right_Frame_for_Label.grid(column=1, row=1, sticky="new")
 
@@ -177,7 +181,7 @@ class Main(tk.Frame):
         s = ttk.Style()
         s.configure('s.TFrame', background='green')
 
-        Button_Frame = ttk.Frame(self, style='s.TFrame')
+        Button_Frame = ttk.Frame(self.master, style='s.TFrame')
         Button_Frame.grid(row=2, column=1, sticky="nsew")
         Button_Save = ttk.Button(Button_Frame, text="Save")
         Button_Save.grid(row=5, column=0, sticky="nsw")
@@ -185,11 +189,12 @@ class Main(tk.Frame):
         def new_service(e):
             index_category=Entry_Kategorie.curselection()
             selection_category=Entry_Kategorie.get(index_category)
-            self.New_Mode(selection_category,"Kolben",Label_Kilometer.get(),Label_Notizen.cget("text"))
+            self.New_Mode(selection_category,"Kolben",Entry_Kilometer.get(),Entry_Notizen.get())
+            self.add_new_data_set_to_treeview(self.InspectionData,TreeView)
         
         
         
-        Button_New = ttk.Button(Button_Frame, text="Edit")
+        Button_New = ttk.Button(Button_Frame, text="Add New Data")
         Button_New.grid(row=5, column=1, sticky="nsw")
         Button_New.bind("<ButtonRelease-1>",new_service)
         Button_Delete = ttk.Button(Button_Frame, text="Delete")
@@ -220,13 +225,26 @@ class Main(tk.Frame):
         print(ItemList)
         return ItemList.index(Category)
 
-    def New_Mode(self,category_selected,part,kilometers,notice,):
+    def New_Mode(self,category_selected,part,kilometers=0,notice="",):
         "This Routine takes all values which are given and creates a new service data set. When the datas are collected they will be passed to the Inspectionbook class, where a new instance will be added to the pickle file"
         Category=category_selected
         parts=part
-        km=kilometers
+        km=int(kilometers)
         note=notice
+        # Pass te information to the self.Inspectionbook and add the service data to it (Add function in inspectionbook)
+        self.InspectionData=IB.Inspectiondata(category_selected,parts,km,note)
+        #Add Inspectiondataset to Inspectionbook
+        #Pass InspectionData Object to function to add it to Treeview
+        
+        self.InspectionData.AddDatainInspectionbook(self.Inspektionsheft)
+
+
         pass
+    def add_new_data_set_to_treeview(self,InspectionData,TreeView):
+        pass
+
+
+
 
 
 if __name__ == '__main__':

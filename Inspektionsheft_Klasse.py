@@ -10,22 +10,25 @@ import pickle
 
 
 class Inspectionbook():
-    Inspektionsliste=[]
+    ServicebookDatas=[]
     def __init__(self):
         
-        self.Inspektionshefts=[]
+        self.ServicebookDatas=[]
         
 
     def append(self,Objekt):
-        self.Inspektionshefts=[]
-        for element in Objekt:
-                self.Inspektionshefts.append(element)
+        #self.ServicebookDatas=[]
+        if type(Objekt) is list:
+            for element in Objekt:
+                    self.ServicebookDatas.append(element)
+        else:
+            self.ServicebookDatas.append(Objekt)
         pass
         
 # #Generator für getter Funktion um Listenobjekte zurückzugeben
 #     @property
     def get_Inspectionbook(self):
-        for DataSet in self.Inspektionshefts:
+        for DataSet in self.ServicebookDatas:
             yield DataSet.Kategorie
             yield DataSet.Bauteil
             yield DataSet.Kilometerstand
