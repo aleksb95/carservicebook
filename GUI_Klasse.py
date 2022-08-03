@@ -75,7 +75,7 @@ class Main(tk.Frame):
         Quit_Button = ttk.Button(
             Upper_Button_Frame, text="Beenden", command=self._root().destroy)
         Quit_Button.grid(row=0, column=1, sticky=tk.W+tk.E, pady=10, padx=5)
-        # Upper_Button_Frame.columnconfigure(0,weight=1)
+        # Upper_Button_Frame.columnconfigure(0,weight=1) comment eddit
         # Upper_Button_Frame.columnconfigure(1,weight=7)
 
         
